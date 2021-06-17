@@ -1,0 +1,114 @@
+.register {
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px;
+}
+.register .box {
+    padding: 25px 30px;
+}
+.register .title {
+    width: 100%;
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+    text-transform: uppercase;
+}
+.register .title::before {
+    content: "";
+    position: absolute;
+    height: 3px;
+    width: 30px;
+    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+    bottom: 0;
+    left: 0;
+}
+
+.register .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+.register .user-details .input-box {
+    width: calc(100% / 2 - 20px);
+    margin-bottom: 15px;
+}
+
+.register .user-details .input-box .details {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.register .user-details .input-box input {
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    font-size: 16px;
+    border-bottom-width: 3px;
+    transition: all 0.3s ease;
+}
+
+.register .user-details .input-box input:focus,
+.register .user-details .input-box input:valid {
+    border-color: #9b59b6;
+}
+
+.register .option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.register .button {
+    height: 45px;
+    margin: 45px 0;
+}
+
+.register .button input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+    cursor: pointer;
+}
+
+.register .button input:hover {
+    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+    background-size: 200% 200%;
+    animation: animatedBackgroundButton 5s ease infinite;
+}
+
+@keyframes animatedBackgroundButton {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@media (max-width: 584px) {
+    .container {
+        max-width: 100%;
+    }
+    .register .user-details .input-box {
+        width: calc(100% - 1px);
+        margin-bottom: 15px;
+    }
+}
