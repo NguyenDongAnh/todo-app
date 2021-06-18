@@ -40,6 +40,15 @@ const actionOfUserReducer = (state = [], action) => {
                 }
                 return task;
             });
+        case Types.CHANGE_INPUT_EDIT_TASK:
+            return state.map(task => {
+                if (task._id === action.payload._id) {
+                    return { ...task, description: action.payload.description };
+                }
+                return task;
+            });
+        case Types.CANCEL_EDIT_TASK:
+            return [...action.payload.data]
         case Types.DONE_TASK:
             return state.map(task => {
                 if (task._id === action.payload._id) {
@@ -56,7 +65,7 @@ const editTaskReducer = (state = [], action) => {
         case Types.ADD_EDIT_TASK:
             return [...state, action.payload];
         case Types.CANCEL_EDIT_TASK:
-            return state.filter((task) => task !== action.payload);
+            return state.filter((task) => task !== action.payload._id);
         case Types.EDIT_TASK:
             return state.filter((task) => task !== action.payload._id);
         default:
@@ -66,21 +75,9 @@ const editTaskReducer = (state = [], action) => {
 
 const alertActionReducer = (state = {}, action) => {
     switch (action.type) {
-        case Types.ADD_TASK_SUCCESS:
+        case Types.SUCCESS_ACTION:
             return { ...setSnackbar(true, "success", action.payload.msg) }
-        case Types.DELETE_TASK_SUCCESS:
-            return { ...setSnackbar(true, "success", action.payload.msg) }
-        case Types.EDIT_TASK_SUCCESS:
-            return { ...setSnackbar(true, "success", action.payload.msg) }
-        case Types.ADD_TASK_ERROR:
-            return { ...setSnackbar(true, "error", action.payload.msg) }
-        case Types.DELETE_TASK_ERROR:
-            return { ...setSnackbar(true, "error", action.payload.msg) }
-        case Types.EDIT_TASK_ERROR:
-            return { ...setSnackbar(true, "error", action.payload.msg) }
-        case Types.LOG_IN_ERROR:
-            return { ...setSnackbar(true, "error", action.payload.msg) }
-        case Types.REGISTER_ERROR:
+        case Types.ERROR_ACTION:
             return { ...setSnackbar(true, "error", action.payload.msg) }
         default:
             return { ...setSnackbar(false, state.snackbarType, '') };

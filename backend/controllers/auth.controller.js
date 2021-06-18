@@ -6,7 +6,9 @@ const auth_helper = require("../helpers/auth.helper");
 
 const registerUser = async (req, res) => {
     try {
-        if (req.body.password !== req.body.repassword) throw Error("Password and confirm password must match !")
+        if (req.body.password !== req.body.repassword) throw Error("Password and confirm password must match !");
+        if (req.body.password < 6) throw Error("Password must have at least 6 characters");
+        if (req.body.password > 12) throw Error("Password should be maximum 12 characters");
         let user = await User.findOne({ email: req.body.email })
         if (user) throw Error("User existed!")
         user = new User();
@@ -32,6 +34,8 @@ const logInUser = async (req, res) => {
         let user = await User.findOne({ email: req.body.email })
         if (user === null)
             return res.status(422).json({ msg: "User or password not correct!" });
+        if (req.body.password < 6) throw Error("Password must have at least 6 characters");
+        if (req.body.password > 12) throw Error("Password should be maximum 12 characters");
         let comparePassword = bcrypt.compareSync(req.body.password, user.password);
         if (!comparePassword)
             return res.status(422).json({ msg: "User or password not correct!" });

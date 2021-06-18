@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 let instance = axios.create({
+    // baseURL: process.env.BASE_URL || "https://todo-appdemo.herokuapp.com/api",
     baseURL: process.env.BASE_URL || "https://todo-appdemo.herokuapp.com/api",
     timeout: 10000,
     headers: {

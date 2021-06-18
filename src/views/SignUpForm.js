@@ -96,6 +96,10 @@ export default function SignUp() {
                                             minLength: {
                                                 value: 6,
                                                 message: "Password must have at least 6 characters"
+                                            },
+                                            maxLength: {
+                                                value: 12,
+                                                message: "Password should be maximum 12 characters"
                                             }
                                         })}
                                 />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getLocalAccessToken } from "../http.common";
-import { addEditTask, addTask, cancelEditTask, deleteTask, doneTask, editTask, fetchTodoList, getInfo, logOut } from "../store/actions/userAction";
+import { addEditTask, addTask, cancelEditTask, changeInputEditTask, deleteTask, doneTask, editTask, fetchTodoList, getInfo, logOut } from "../store/actions/userAction";
 import CustomizedSnackbar from "./CustomizedSnacbar";
 import Skeleton from '@material-ui/lab/Skeleton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,8 +25,15 @@ export default function TodoList() {
         return state.todoList;
     })
     const info = useSelector(state => state.isAuthenticated.info)
+    const [timer, setTimer] = useState(0)
+
+
     const handleChangeInputTask = (e) => {
         setInputTask(e.target.value);
+    }
+
+    const handleChangeInputEditTask = (taskId, description) => {
+        dispatch(changeInputEditTask(taskId, description))
     }
 
     const handleAddTask = () => {
@@ -44,9 +51,9 @@ export default function TodoList() {
             handleAddTask()
     }
 
-    const handleKeyPressEdit = (taskId) => (e) => {
+    const handleKeyPressEdit = (taskId, description) => (e) => {
         if (e.which === 13)
-            handleEditTask(taskId)
+            handleEditTask(taskId, description)
     }
 
     const handleDeleteTask = (taskId) => {
@@ -55,11 +62,9 @@ export default function TodoList() {
 
     const handleAddEditTask = async (taskId) => {
         await dispatch(addEditTask(taskId))
-        document.getElementById(taskId).focus()
     }
 
-    const handleEditTask = (taskId) => {
-        let description = document.getElementById(taskId).value
+    const handleEditTask = (taskId, description) => {
         if (description.trim()) {
             let data = {
                 _id: taskId,
@@ -93,8 +98,14 @@ export default function TodoList() {
 
     useEffect(() => {
         handleAction()
-        return () => { }
+        return () => { clearInterval() }
     }, [handleAction])
+    
+    useEffect(() => {
+        if (timer !== 10)
+            setInterval(() => setTimer(timer => ++timer), 1000)
+        return () => { clearInterval() }
+    }, [])
 
 
 
@@ -111,7 +122,7 @@ export default function TodoList() {
                         <i className='bx bx-plus' onClick={() => handleAddTask()}></i>
                     </div>
                     <div className="todo-content">
-                        {todoList.length === 0 ? (<div className={classes.root}><Skeleton variant="rect" style={{ borderRadius: "5px" }} width="100%" height={54} /></div>) : ''}
+                        {todoList.length === 0 && timer !== 10 ? (<div className={classes.root}><Skeleton variant="rect" style={{ borderRadius: "5px" }} width="100%" height={54} /></div>) : ''}
                         {todoList.map((task, index) => {
                             return (
                                 <div key={task._id}>
@@ -123,27 +134,39 @@ export default function TodoList() {
                                             <label htmlFor={index} >
                                                 <span className="checkmark"></span>
                                             </label>
-                                            <input className="todo-description" value={task.description} readOnly={true}/>
+                                            <div className="todo-description" >{task.description}</div>
                                             <div className="todo-action">
                                                 <i className='bx bx-trash' aria-label={"delete " + task.description} onClick={() => {
                                                     handleDeleteTask(task._id)
                                                 }}></i>
-                                                <i className='bx bxs-edit' aria-label={"edit " + task.description} onClick={() => {
+                                                {!task.done ? (<i className='bx bxs-edit' aria-label={"edit " + task.description} onClick={() => {
                                                     handleAddEditTask(task._id)
-                                                }}></i>
+                                                }}></i>) : (<i className='bx bxs-edit' style={{ background: "#ccc" }}></i>)}
+
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="todo-item">
-                                            <input type="checkbox" id={index} defaultChecked={task.done ? true : false} />
+                                            <input type="checkbox" id={index} defaultChecked={task.done} onClick={(e) => {
+                                                handleCompleteTask(task._id, e.target.checked)
+                                                handleCancelEditTask(task._id)
+                                            }}
+                                            />
                                             <label htmlFor={index} >
                                                 <span className="checkmark"></span>
                                             </label>
-                                            <input className="todo-description" id={task._id} placeholder="Edit your task description ..." onKeyPress={handleKeyPressEdit(task._id)} />
+                                            <input className="todo-description"
+                                                value={task.description}
+                                                placeholder="Edit your task description ..."
+                                                onKeyPress={(e) => {
+                                                    handleKeyPressEdit(task._id, task.description)
+                                                }}
+                                                onChange={(e) => { handleChangeInputEditTask(task._id, e.target.value) }}
+                                            />
                                             <div className="todo-action">
-                                                <i className='bx bx-x' aria-label={"cancel edit " + task.description} onClick={() => handleCancelEditTask(task._id)}></i>
+                                                <i className='bx bx-x' aria-label={"cancel edit " + task.description} onClick={() => { handleCancelEditTask(task._id) }}></i>
                                                 <i className='bx bx-check' style={{ backgroundColor: 'green' }} aria-label={"confirm edit " + task.description}
-                                                    onClick={() => handleEditTask(task._id)}>
+                                                    onClick={() => handleEditTask(task._id, task.description)}>
                                                 </i>
                                             </div>
                                         </div>

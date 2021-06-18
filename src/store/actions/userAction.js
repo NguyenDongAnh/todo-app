@@ -11,7 +11,7 @@ const logIn = (data) => async (dispatch) => {
         })
         dispatch({ type: Types.LOG_IN, payload: response.data })
     } catch (error) {
-        dispatch({ type: Types.LOG_IN_ERROR, payload: error.response.data })
+        dispatch({ type: Types.ERROR_ACTION, payload: error.response.data })
     }
 }
 
@@ -60,11 +60,10 @@ const addTask = (task) => async (dispatch) => {
             url: '/todo',
             data: task
         })
-        console.log(response.data.msg)
         dispatch({ type: Types.ADD_TASK, payload: response.data })
-        dispatch({ type: Types.ADD_TASK_SUCCESS, payload: response.data })
+        dispatch({ type: Types.SUCCESS_ACTION, payload: response.data })
     } catch (error) {
-        dispatch({ type: Types.ADD_TASK_ERROR, payload: error.response.data })
+        dispatch({ type: Types.ERROR_ACTION, payload: error.response.data })
     }
 }
 
@@ -76,10 +75,14 @@ const deleteTask = (taskId) => async (dispatch) => {
             data: { taskId: taskId }
         })
         dispatch({ type: Types.DELETE_TASK, payload: taskId })
-        dispatch({ type: Types.DELETE_TASK_SUCCESS, payload: response.data })
+        dispatch({ type: Types.SUCCESS_ACTION, payload: response.data })
     } catch (error) {
-        dispatch({ type: Types.DELETE_TASK_ERROR, payload: error.response.data })
+        dispatch({ type: Types.ERROR_ACTION, payload: error.response.data })
     }
+}
+
+const changeInputEditTask = (taskId, description) => (dispatch) => {
+    dispatch({ type: Types.CHANGE_INPUT_EDIT_TASK, payload: { _id: taskId, description: description } })
 }
 
 const addEditTask = (taskId) => async (dispatch) => {
@@ -88,7 +91,15 @@ const addEditTask = (taskId) => async (dispatch) => {
 
 
 const cancelEditTask = (taskId) => async (dispatch) => {
-    dispatch({ type: Types.CANCEL_EDIT_TASK, payload: taskId })
+    try {
+        let response = await instance({
+            method: 'get',
+            url: '/todolist'
+        })
+        dispatch({ type: Types.CANCEL_EDIT_TASK, payload: { _id: taskId, data: response.data } })
+    } catch (error) {
+        dispatch({ type: Types.ERROR_ACTION, payload: error.response.data })
+    }
 }
 
 const editTask = (data) => async (dispatch) => {
@@ -96,13 +107,13 @@ const editTask = (data) => async (dispatch) => {
         let response = await instance({
             method: 'put',
             url: '/todo',
-            data: data
+            data: { ...data, type: "edit" }
         })
-        console.log(response.data)
+
         dispatch({ type: Types.EDIT_TASK, payload: data })
-        dispatch({ type: Types.EDIT_TASK_SUCCESS, payload: response.data })
+        dispatch({ type: Types.SUCCESS_ACTION, payload: response.data })
     } catch (error) {
-        dispatch({ type: Types.EDIT_TASK_ERROR, payload: error.response.data })
+        dispatch({ type: Types.ERROR_ACTION, payload: error.response.data })
     }
 }
 
@@ -113,11 +124,11 @@ const doneTask = (taskId, taskDone) => async (dispatch) => {
             url: '/todo',
             data: { _id: taskId, done: taskDone }
         })
-        dispatch({ type: Types.DONE_TASK, payload: taskId })
+        dispatch({ type: Types.DONE_TASK, payload: { _id: taskId } })
     } catch (error) {
     }
 }
 
 
 
-export { logIn, logOut, getInfo, fetchTodoList, addTask, deleteTask, addEditTask, cancelEditTask, editTask, doneTask }
+export { logIn, logOut, getInfo, fetchTodoList, addTask, deleteTask, addEditTask, changeInputEditTask, cancelEditTask, editTask, doneTask }
